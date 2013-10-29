@@ -42,12 +42,23 @@ class TestGlobre(unittest.TestCase):
 
   #----------------------------------------------------------------------------
   def test_compile(self):
+    expr = globre.compile('/foo/bar/*.dir/**.ini', flags=0)
+    self.assertEqual(expr.pattern, r'\/foo\/bar\/[^/]*?\.dir\/.*?\.ini')
+
+  #----------------------------------------------------------------------------
+  def test_compile_exact(self):
     expr = globre.compile('/foo/bar/*.dir/**.ini', flags=globre.EXACT)
+    self.assertEqual(expr.pattern, r'^\/foo\/bar\/[^/]*?\.dir\/.*?\.ini$')
     self.assertIsNotNone(expr.match('/foo/bar/a.dir/blue/conf.ini'))
     self.assertIsNotNone(expr.match('/foo/bar/a.dir/conf.ini'))
     self.assertIsNone(expr.match('/foo/bar/blue/a.dir/conf.ini'))
     self.assertIsNone(expr.match('/foo/bar/a.dir/conf.ini.x'))
     self.assertIsNone(expr.match('/x/foo/bar/a.dir/conf.ini'))
+
+  #----------------------------------------------------------------------------
+  def test_prefix(self):
+    self.assertEqual(globre.compile('/foo/bar', split_prefix=True)[0], '/foo/bar')
+    self.assertEqual(globre.compile('/foo/b**', split_prefix=True)[0], '/foo/b')
 
 #------------------------------------------------------------------------------
 # end of $Id$
