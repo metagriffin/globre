@@ -12,12 +12,93 @@ import re
 EXACT = 1 << 10
 E     = EXACT
 
+#------------------------------------------------------------------------------
+class Tokenizer(object):
+  LITERAL  = 'literal'    # abcdef...
+  SINGLE   = 'single'     # ?
+  MULTIPLE = 'multiple'   # *
+  ANY      = 'any'        # **
+  RANGE    = 'range'      # [...]
+  REGEX    = 'regex'      # {...}
+  submap   = {
+    '[' : (']', RANGE),
+    '{' : ('}', REGEX),
+    }
+  def __init__(self, source):
+    self.source = source
+    self.pos    = 0
+  def tokens(self):
+    '''
+    Generates four-element tuples of: (type, value, start, end).
+    '''
+    for token in self._outer():
+      yield token
+  def _outer(self):
+    start = self.pos
+    value = ''
+    while self.pos < len(self.source):
+      cur = self.source[self.pos]
+      if cur not in '\\?*[{':
+        value += cur
+        self.pos += 1
+        continue
+      if cur == '\\':
+        self.pos += 1
+        if self.pos >= len(self.source):
+          raise ValueError('dangling backslash "\\" in glob: %s' % (self.source,))
+        value += self.source[self.pos]
+        self.pos += 1
+        continue
+      if len(value) > 0:
+        yield (self.LITERAL, value, start, self.pos)
+      self.pos += 1
+      value = ''
+      start = self.pos
+      if cur == '?':
+        yield (self.SINGLE, '?', start - 1, start)
+        continue
+      if cur == '*':
+        if self.pos >= len(self.source) or self.source[self.pos] != '*':
+          yield (self.MULTIPLE, '*', start - 1, start)
+          continue
+        yield (self.ANY, '**', start - 1, start + 1)
+        self.pos += 1
+        start = self.pos
+        continue
+      if cur in self.submap:
+        spec = self.submap[cur]
+        value = self._scan(spec[0])
+        if len(value) > 0:
+          yield (spec[1], value, start - 1, self.pos)
+        value = ''
+        start = self.pos
+        continue
+      raise ValueError('unexpected glob character "%s" in glob: %s'
+                       % (cur, self.source))
+    if len(value) > 0:
+      yield (self.LITERAL, value, start, self.pos)
+  def _scan(self, target):
+    value = ''
+    while self.pos < len(self.source):
+      cur = self.source[self.pos]
+      self.pos += 1
+      if cur == '\\':
+        if self.pos >= len(self.source):
+          raise ValueError('dangling backslash "\\" in glob: %s' % (self.source,))
+        value += self.source[self.pos]
+        self.pos += 1
+        continue
+      if cur == target:
+        return value
+      value += cur
+    raise ValueError('no terminating "%s" in glob: %s' % (target, self.source))
+
 WILDCHARS = '?*[{\\'
 
 #------------------------------------------------------------------------------
 def iswild(pattern):
-  for wild in WILDCHARS:
-    if wild in pattern:
+  for token in Tokenizer(pattern).tokens():
+    if token[0] != Tokenizer.LITERAL:
       return True
   return False
 
@@ -28,18 +109,12 @@ def compile(pattern, split_prefix=False, flags=0):
   to a regular expression, which basically means that the following
   characters have special meanings:
 
-  * ``?``:   matches any single character excluding the slash ('/') character
-  * ``*``:   matches zero or more characters excluding the slash ('/') character
-  * ``**``:  matches zero or more characters including the slash ('/') character
-  * ``\``:   escape character used to precede any of the others for a literal
-
-  TODO: the backslash-escaping is not implemented.
-
-  TODO: add support for [...] character ranges.
-
-  TODO: add support fo {...} explicit regex.
-
-  TODO: implement `flags`.
+  * ``?``:     matches any single character excluding the slash ('/') character
+  * ``*``:     matches zero or more characters excluding the slash ('/') character
+  * ``**``:    matches zero or more characters including the slash ('/') character
+  * ``\``:     escape character used to precede any of the others for a literal
+  * ``[...]``: matches any character in the specified regex-style range
+  * ``{...}``: inlines a regex expression
 
   If `split_prefix` is truthy, the return value becomes a tuple with
   the first element set to any initial non-wildcarded string found in
@@ -53,48 +128,37 @@ def compile(pattern, split_prefix=False, flags=0):
   that the regex must match the entire string, from beginning to end.
   '''
 
-  # todo: this is a poor-man's implementation... this could be
-  #         a) more efficient
-  #         b) implement escaping
-  #         c) be more LR-parsing rigorous...
-
-  # todo: all of that could be implemented using python's `shlex`...
-
-  # todo: this prefix extraction is ugly... improve
   prefix = None
-  if split_prefix:
-    idx = None
-    for wild in WILDCHARS:
-      if wild in pattern:
-        if idx is None:
-          idx = pattern.find(wild)
-        else:
-          idx = min(idx, pattern.find(wild))
-    if idx is not None:
-      prefix = pattern[:idx]
+  expr   = ''
+
+  for token in Tokenizer(pattern).tokens():
+    if split_prefix and expr == '':
+      prefix = token[1] if token[0] == Tokenizer.LITERAL else ''
+    if token[0] == Tokenizer.LITERAL:
+      expr += re.escape(token[1])
+    elif token[0] == Tokenizer.SINGLE:
+      expr += '[^/]'
+    elif token[0] == Tokenizer.MULTIPLE:
+      expr += '[^/]*?'
+    elif token[0] == Tokenizer.ANY:
+      expr += '.*?'
+    elif token[0] == Tokenizer.RANGE:
+      expr += '[' + token[1] + ']'
+    elif token[0] == Tokenizer.REGEX:
+      expr += token[1]
     else:
-      prefix = pattern
+      ValueError('unexpected token %r from globre.Tokenizer for glob: %s'
+                 % (token, pattern))
 
-  # 'encode' the special characters into non-regex-special characters
-  pattern = pattern \
-    .replace('Z', 'ZI') \
-    .replace('?', 'ZQ') \
-    .replace('**', 'ZA') \
-    .replace('*', 'ZD')
+  if flags & EXACT:
+    if not expr.startswith('^'):
+      expr = '^' + expr
+    # todo: technically, the last "$" *could* be escaped and therefore
+    #       an extra "$" would need to be added... but that is very unlikely.
+    if not expr.endswith('$'):
+      expr += '$'
 
-  # escape all regex-sensitive characters
-  pattern = re.escape(pattern)
-
-  # and undo the 'encoding'
-  pattern = pattern \
-    .replace('ZD', '[^/]*?') \
-    .replace('ZA', '.*?') \
-    .replace('ZQ', '.') \
-    .replace('ZI', 'Z')
-
-  exact = flags & EXACT
-  flags = flags & ~ EXACT
-  expr  = re.compile(( '^' + pattern + '$' ) if exact else pattern, flags=flags)
+  expr = re.compile(expr, flags=flags & ~ EXACT)
 
   if prefix is not None:
     return (prefix, expr)
