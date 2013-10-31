@@ -103,7 +103,7 @@ def iswild(pattern):
   return False
 
 #------------------------------------------------------------------------------
-def compile(pattern, split_prefix=False, flags=0):
+def compile(pattern, flags=0, split_prefix=False):
   '''
   Converts a glob-matching pattern (using Apache Cocoon style rules)
   to a regular expression, which basically means that the following
@@ -116,16 +116,16 @@ def compile(pattern, split_prefix=False, flags=0):
   * ``[...]``: matches any character in the specified regex-style range
   * ``{...}``: inlines a regex expression
 
+  The `flags` bit mask can contain all the standard `re` flags, in
+  addition to the ``globre.EXACT`` flag. If EXACT is set, then the
+  returned regex will include a leading '^' and trailing '$', meaning
+  that the regex must match the entire string, from beginning to end.
+
   If `split_prefix` is truthy, the return value becomes a tuple with
   the first element set to any initial non-wildcarded string found in
   the pattern. The second element remains the regex object as before.
   For example, the pattern ``foo/**.ini`` would result in a tuple
   equivalent to ``('foo/', re.compile('foo/.*\\.ini'))``.
-
-  The `flags` bit mask can contain all the standard `re` flags, in
-  addition to the ``globre.EXACT`` flag. If EXACT is set, then the
-  returned regex will include a leading '^' and trailing '$', meaning
-  that the regex must match the entire string, from beginning to end.
   '''
 
   prefix = None
