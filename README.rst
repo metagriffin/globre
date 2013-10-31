@@ -50,13 +50,18 @@ Sequence   Meaning
 ``?``      Matches any single character except the slash
            ('/') character.
 ``*``      Matches zero or more characters *excluding* the slash
-           ('/') character.
+           ('/') character, e.g. ``/etc/*.conf`` which will *not*
+           match "/etc/foo/bar.conf".
 ``**``     Matches zero or more characters *including* the slash
-           ('/') character.
+           ('/') character, e.g. ``/lib/**.so`` which *will*
+           match "/lib/foo/bar.so".
 ``\``      Escape character used to precede any of the other special
-           characters (in order to insert it literally).
-``[...]``  Matches any character in the specified regex-style range.
-``{...}``  Inlines a regex expression.
+           characters (in order to match them literally), e.g.
+           ``foo\?`` will match a "foo" with a literal question mark.
+``[...]``  Matches any character in the specified regex-style character range,
+           e.g. ``foo[0-9A-F].conf``.
+``{...}``  Inlines a regex expression, e.g. ``foo-{\\D{2,4\}}.txt`` which
+           will match "foo-bar.txt" but not "foo-012.txt".
 =========  ====================================================================
 
 The `globre` package exports the following functions:
