@@ -53,7 +53,7 @@ Sequence   Meaning
            ('/') character.
 ``**``     Matches zero or more characters *including* the slash
            ('/') character.
-``\\``     Escape character used to precede any of the other special
+``\``      Escape character used to precede any of the other special
            characters (in order to insert it literally).
 ``[...]``  Matches any character in the specified regex-style range.
 ``{...}``  Inlines a regex expression.
