@@ -12,13 +12,13 @@ Install:
 
 .. code-block:: bash
 
-  $ pip install globre
+  $ pip install globlib
 
 Use:
 
 .. code-block:: python
 
-  import globre
+  import globlib
 
   names = [
     '/path/to/file.txt',
@@ -26,13 +26,13 @@ Use:
     '/path/to/subdir/base.ini',
     ]
 
-  txt_names = [name for name in names if globre.match('/path/to/*.txt', name)]
+  txt_names = [name for name in names if globlib.match('/path/to/*.txt', name)]
   assert txt_names == ['/path/to/file.txt']
 
-  ini_names = [name for name in names if globre.match('/path/to/*.ini', name)]
+  ini_names = [name for name in names if globlib.match('/path/to/*.ini', name)]
   assert ini_names == ['/path/to/config.ini']
 
-  all_ini_names = [name for name in names if globre.match('/path/to/**.ini', name)]
+  all_ini_names = [name for name in names if globlib.match('/path/to/**.ini', name)]
   assert all_ini_names == ['/path/to/config.ini', '/path/to/subdir/base.ini']
 
 
@@ -64,37 +64,37 @@ Sequence   Meaning
            will match "foo-bar.txt" but not "foo-012.txt".
 =========  ====================================================================
 
-The `globre` package exports the following functions:
+The `globlib` package exports the following functions:
 
-* ``globre.match(pattern, string, flags=0)``:
+* ``globlib.match(pattern, string, flags=0)``:
 
   Tests whether or not the glob `pattern` matches the `string`. If it
   does, a `re.MatchObject` is returned, otherwise ``None``. The `string`
-  must be matched in its entirety. See `globre.compile` for details on
+  must be matched in its entirety. See `globlib.compile` for details on
   the `flags` parameter. Example:
 
   .. code-block:: python
 
-    globre.match('/etc/**.conf', '/etc/rsyslog.conf')
+    globlib.match('/etc/**.conf', '/etc/rsyslog.conf')
     # => truthy
 
-* ``globre.search(pattern, string, flags=0)``:
+* ``globlib.search(pattern, string, flags=0)``:
 
-  Similar to `globre.match`, but the pattern does not need to match
+  Similar to `globlib.match`, but the pattern does not need to match
   the entire string. Example:
 
   .. code-block:: python
 
-    globre.search('lib/**.so', '/var/lib/python/readline.so.6.2')
+    globlib.search('lib/**.so', '/var/lib/python/readline.so.6.2')
     # => truthy
 
-* ``globre.compile(pattern, flags=0, split_prefix=False)``:
+* ``globlib.compile(pattern, flags=0, split_prefix=False)``:
 
   Compiles the specified `pattern` into a matching object that has the
   same API as the regular expression object returned by `re.compile`.
 
   The `flags` bit mask can contain all the standard `re` flags, in
-  addition to the ``globre.EXACT`` flag. If EXACT is set, then the
+  addition to the ``globlib.EXACT`` flag. If EXACT is set, then the
   returned regex will include the equivalent of a leading '^' and
   trailing '$', meaning that the regex must match the entire string,
   from beginning to end.
@@ -109,7 +109,7 @@ The `globre` package exports the following functions:
 
   .. code-block:: python
 
-    prefix, expr = globre.compile('/path/to**.ini', split_prefix=True)
+    prefix, expr = globlib.compile('/path/to**.ini', split_prefix=True)
     # prefix => '/path/to'
 
     names = [
@@ -132,8 +132,8 @@ What About the ``glob`` Module
 This package is different from the standard Python `glob` module in
 the following critical ways:
 
-* The `glob` module operates on the actual filesystem; `globre` can be
-  used to match both files on the filesystem as well as any other
+* The `glob` module operates on the actual filesystem; `globlib` can
+  be used to match both files on the filesystem as well as any other
   sources of strings to match.
 
 * The `glob` module does not provide the ``**`` "descending" matcher.
