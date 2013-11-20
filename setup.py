@@ -41,8 +41,7 @@ classifiers = [
   'Programming Language :: Python',
   'Operating System :: OS Independent',
   'Natural Language :: English',
-  'License :: OSI Approved :: MIT License',
-  'License :: Public Domain',
+  'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
   ]
 
 setup(
@@ -63,7 +62,7 @@ setup(
   tests_require         = test_dependencies,
   test_suite            = 'globlib',
   entry_points          = entrypoints,
-  license               = 'MIT (http://opensource.org/licenses/MIT)',
+  license               = 'GPLv3+',
   )
 
 #------------------------------------------------------------------------------
