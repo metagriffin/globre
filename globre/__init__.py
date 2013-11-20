@@ -130,7 +130,7 @@ def compile(pattern, flags=0, split_prefix=False):
   * ``{...}``: inlines a regex expression
 
   The `flags` bit mask can contain all the standard `re` flags, in
-  addition to the ``globlib.EXACT`` flag. If EXACT is set, then the
+  addition to the ``globre.EXACT`` flag. If EXACT is set, then the
   returned regex will include a leading '^' and trailing '$', meaning
   that the regex must match the entire string, from beginning to end.
 
@@ -160,7 +160,7 @@ def compile(pattern, flags=0, split_prefix=False):
     elif token[0] == Tokenizer.REGEX:
       expr += token[1]
     else:
-      ValueError('unexpected token %r from globlib.Tokenizer for glob: %s'
+      ValueError('unexpected token %r from globre.Tokenizer for glob: %s'
                  % (token, pattern))
 
   if flags & EXACT:

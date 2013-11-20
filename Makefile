@@ -1,2 +1,2 @@
-PKGNAME = globlib
+PKGNAME = globre
 include Makefile.python

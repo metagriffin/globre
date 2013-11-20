@@ -58,14 +58,14 @@ classifiers = [
   ]
 
 setup(
-  name                  = 'globlib',
+  name                  = 'globre',
   version               = read('VERSION.txt', default='0.0.1').strip(),
-  description           = 'A glob-like regular expression generation library.',
+  description           = 'A glob matching library, providing an interface similar to the "re" module.',
   long_description      = read('README.rst'),
   classifiers           = classifiers,
   author                = 'metagriffin',
   author_email          = 'mg.pypi@uberdev.org',
-  url                   = 'http://github.com/metagriffin/globlib',
+  url                   = 'http://github.com/metagriffin/globre',
   keywords              = 'python glob pattern matching regular expression',
   packages              = find_packages(),
   platforms             = ['any'],
@@ -73,7 +73,7 @@ setup(
   zip_safe              = True,
   install_requires      = dependencies,
   tests_require         = test_dependencies,
-  test_suite            = 'globlib',
+  test_suite            = 'globre',
   entry_points          = entrypoints,
   license               = 'GPLv3+',
   )
