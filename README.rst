@@ -41,7 +41,7 @@ Details
 
 This package basically allows using unix shell-like filename globbing
 to be used to match a string in a Python program. The glob matching
-allows must characters to match themselves, with the following
+allows most characters to match themselves, with the following
 sequences having special meanings:
 
 =========  ====================================================================
