@@ -37,9 +37,7 @@ test_dependencies = [
   'coverage             >= 3.6',
   ]
 
-dependencies = [
-  'distribute           >= 0.6.24',
-  ]
+dependencies = []
 
 entrypoints = {
   # 'console_scripts': [
