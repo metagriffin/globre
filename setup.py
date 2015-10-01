@@ -35,7 +35,7 @@ def read(*parts, **kw):
 test_dependencies = [
   'nose                 >= 1.3.0',
   'coverage             >= 3.6',
-  ]
+]
 
 dependencies = []
 
@@ -43,7 +43,7 @@ entrypoints = {
   # 'console_scripts': [
   #   'TODO:PROJNAME      = TODO:PROJNAME.cli:main',
   #   ],
-  }
+}
 
 classifiers = [
   'Development Status :: 4 - Beta',
@@ -53,7 +53,7 @@ classifiers = [
   'Operating System :: OS Independent',
   'Natural Language :: English',
   'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-  ]
+]
 
 setup(
   name                  = 'globre',
@@ -74,7 +74,7 @@ setup(
   test_suite            = 'globre',
   entry_points          = entrypoints,
   license               = 'GPLv3+',
-  )
+)
 
 #------------------------------------------------------------------------------
 # end of $Id$
