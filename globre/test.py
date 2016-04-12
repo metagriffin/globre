@@ -26,6 +26,17 @@ import globre
 #------------------------------------------------------------------------------
 class TestGlobre(unittest.TestCase):
 
+  if not hasattr(unittest.TestCase, 'assertIsNone'):
+    def assertIsNone(self, *args, **kwargs):
+      """Basic version of unittest.assertIsNotNone for Python 2.6 unittest."""
+      return self.assertEqual(None, *args, **kwargs)
+
+  if not hasattr(unittest.TestCase, 'assertIsNotNone'):
+    def assertIsNotNone(self, *args, **kwargs):
+      """Basic version of unittest.assertIsNotNone for Python 2.6 unittest."""
+      return self.assertNotEqual(None, *args, **kwargs)
+
+
   #----------------------------------------------------------------------------
   def test_tokenizer(self):
     self.assertEqual(
