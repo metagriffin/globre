@@ -23,10 +23,6 @@
 import os, sys, setuptools
 from setuptools import setup, find_packages
 
-# require python 2.7+
-if sys.hexversion < 0x02070000:
-  raise RuntimeError('This package requires python 2.7 or better')
-
 heredir = os.path.abspath(os.path.dirname(__file__))
 def read(*parts, **kw):
   try:    return open(os.path.join(heredir, *parts)).read()
