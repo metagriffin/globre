@@ -10,13 +10,13 @@ TL;DR
 
 Install:
 
-.. code-block:: bash
+.. code:: bash
 
   $ pip install globre
 
 Use:
 
-.. code-block:: python
+.. code:: python
 
   import globre
 
@@ -24,7 +24,7 @@ Use:
     '/path/to/file.txt',
     '/path/to/config.ini',
     '/path/to/subdir/base.ini',
-    ]
+  ]
 
   txt_names = [name for name in names if globre.match('/path/to/*.txt', name)]
   assert txt_names == ['/path/to/file.txt']
@@ -73,7 +73,7 @@ The `globre` package exports the following functions:
   must be matched in its entirety. See `globre.compile` for details on
   the `flags` parameter. Example:
 
-  .. code-block:: python
+  .. code:: python
 
     globre.match('/etc/**.conf', '/etc/rsyslog.conf')
     # => truthy
@@ -83,7 +83,7 @@ The `globre` package exports the following functions:
   Similar to `globre.match`, but the pattern does not need to match
   the entire string. Example:
 
-  .. code-block:: python
+  .. code:: python
 
     globre.search('lib/**.so', '/var/lib/python/readline.so.6.2')
     # => truthy
@@ -107,7 +107,7 @@ The `globre` package exports the following functions:
 
   Example:
 
-  .. code-block:: python
+  .. code:: python
 
     prefix, expr = globre.compile('/path/to**.ini', split_prefix=True)
     # prefix => '/path/to'
@@ -116,7 +116,7 @@ The `globre` package exports the following functions:
       '/path/to/file.txt',
       '/path/to/config.ini',
       '/path/to/subdir/base.ini',
-      ]
+    ]
 
     for name in names:
       if not expr.match(name):
@@ -140,3 +140,6 @@ the following critical ways:
 
 * The `glob` module does not provide the ``{...}`` regular expression
   inlining feature.
+
+* The `glob` module does not provide an alternate hierarchy separator
+  beyond ``/`` or ``\\``.
