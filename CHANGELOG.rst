@@ -3,6 +3,12 @@ ChangeLog
 =========
 
 
+v0.1.5
+======
+
+* Added support for alternate hierarchy separators
+
+
 v0.1.4
 ======
 
