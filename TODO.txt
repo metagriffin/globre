@@ -1,2 +1,9 @@
-- perhaps move to use grouped matches (like https://pypi.python.org/pypi/glob2)
+======
+TODO's
+======
+
+
+* make it possible (via an option) for 'foo/**' to match 'foo'
+
+* perhaps move to use grouped matches (like https://pypi.python.org/pypi/glob2)
   and use that instead of the "split_prefix" hack...
