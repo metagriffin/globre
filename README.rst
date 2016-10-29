@@ -57,7 +57,7 @@ Sequence   Meaning
            match "/lib/foo/bar.so".
 ``\``      Escape character used to precede any of the other special
            characters (in order to match them literally), e.g.
-           ``foo\?`` will match a "foo" with a literal question mark.
+           ``foo\?`` will match "foo" followed by a literal question mark.
 ``[...]``  Matches any character in the specified regex-style character range,
            e.g. ``foo[0-9A-F].conf``.
 ``{...}``  Inlines a regex expression, e.g. ``foo-{\\D{2,4\}}.txt`` which
@@ -66,19 +66,19 @@ Sequence   Meaning
 
 The `globre` package exports the following functions:
 
-* ``globre.match(pattern, string, flags=0)``:
+* ``globre.match(pattern, string, sep=None, flags=0)``:
 
   Tests whether or not the glob `pattern` matches the `string`. If it
   does, a `re.MatchObject` is returned, otherwise ``None``. The `string`
   must be matched in its entirety. See `globre.compile` for details on
-  the `flags` parameter. Example:
+  the `sep` and `flags` parameters. Example:
 
   .. code:: python
 
     globre.match('/etc/**.conf', '/etc/rsyslog.conf')
     # => truthy
 
-* ``globre.search(pattern, string, flags=0)``:
+* ``globre.search(pattern, string, sep=None, flags=0)``:
 
   Similar to `globre.match`, but the pattern does not need to match
   the entire string. Example:
@@ -88,10 +88,20 @@ The `globre` package exports the following functions:
     globre.search('lib/**.so', '/var/lib/python/readline.so.6.2')
     # => truthy
 
-* ``globre.compile(pattern, flags=0, split_prefix=False)``:
+* ``globre.compile(pattern, sep=None, flags=0, split_prefix=False)``:
 
   Compiles the specified `pattern` into a matching object that has the
   same API as the regular expression object returned by `re.compile`.
+
+  The `sep` parameter specifies the hierarchical path component
+  separator to use. By default, it uses the unix-style forward-slash
+  separator (``"/"``), but can be overriden to be a sequence of
+  alternative valid hierarchical path component separator characters.
+  Note that although `sep` *could* be set to both forward- and back-
+  slashes (i.e. ``"/\\"``) to, theoretically, support either unix- and
+  windows-style path components, this has the significant flaw that
+  then *both* characters can be used within the same path as
+  separators.
 
   The `flags` bit mask can contain all the standard `re` flags, in
   addition to the ``globre.EXACT`` flag. If EXACT is set, then the
@@ -115,13 +125,15 @@ The `globre` package exports the following functions:
     names = [
       '/path/to/file.txt',
       '/path/to/config.ini',
+      '/path/to/subdir/otherfile.txt',
       '/path/to/subdir/base.ini',
     ]
 
     for name in names:
       if not expr.match(name):
+        # ignore the two ".txt" files
         continue
-      # ... do something with:
+      # and do something with:
       #   - /path/to/config.ini
       #   - /path/to/subdir/base.ini
 

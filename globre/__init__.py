@@ -139,7 +139,7 @@ def compile(pattern, flags=0, sep=None, split_prefix=False):
     separator (``"/"``), but can be overriden to be a sequence of
     alternative valid hierarchical path component separator characters.
     Note that although `sep` *could* be set to both forward- and back-
-    slashes (i.e. ``"/\\"``) to, theoretically, support both unix- and
+    slashes (i.e. ``"/\\"``) to, theoretically, support either unix- and
     windows-style path components, this has the significant flaw that
     then *both* characters can be used within the same path as
     separators.
