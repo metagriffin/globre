@@ -151,6 +151,49 @@ class TestGlobre(unittest.TestCase):
       r'\/foo[0-9a-f]\/[^/]*?\/bar\[[^/][^/]\]\/\D{2,4}\/.*?\.txt')
     self.assertIsNotNone(expr.match('/foo6/zog/bar[16]/abra/cadabra.txt'))
 
+  #----------------------------------------------------------------------------
+  def test_sep_compile(self):
+    self.assertEqual(
+      globre.compile('!foo!bar!*.dir!**.ini', sep='!').pattern,
+      r'\!foo\!bar\![^\!]*?\.dir\!.*?\.ini')
+
+  #----------------------------------------------------------------------------
+  def test_sep_default(self):
+    self.assertIsNotNone(globre.match('/foo/**.ini', '/foo/bar/conf.ini'))
+    self.assertIsNone(globre.match('/foo/**.ini', '\\foo\\bar\\conf.ini'))
+    self.assertIsNotNone(globre.match(':foo:**.ini', ':foo:bar:conf.ini'))
+    self.assertIsNone(globre.match('/foo/*.ini', '/foo/bar/conf.ini'))
+    self.assertIsNone(globre.match('/foo/*.ini', '\\foo\\bar\\conf.ini'))
+    self.assertIsNotNone(globre.match(':foo:*.ini', ':foo:bar:conf.ini'))
+
+  #----------------------------------------------------------------------------
+  def test_sep_alternate(self):
+    self.assertIsNotNone(globre.match('/foo/**.ini', '/foo/bar/conf.ini', sep='/'))
+    self.assertIsNotNone(globre.match('\\\\foo\\\\**.ini', '\\foo\\bar\\conf.ini', sep='\\'))
+    self.assertIsNotNone(globre.match(':foo:**.ini', ':foo:bar:conf.ini', sep=':'))
+    self.assertIsNone(globre.match('/foo/*.ini', '/foo/bar/conf.ini', sep='/'))
+    self.assertIsNone(globre.match('\\\\foo\\\\*.ini', '\\foo\\bar\\conf.ini', sep='\\'))
+    self.assertIsNone(globre.match(':foo:*.ini', ':foo:bar:conf.ini', sep=':'))
+
+  #----------------------------------------------------------------------------
+  def test_sep_multi(self):
+    self.assertIsNotNone(globre.match('/foo/**.ini', '/foo/bar/conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('/foo/**.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('/foo/**.ini', '/foo\\bar/conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('\\\\foo\\\\**.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('\\\\foo\\\\**.ini', '/foo/bar/conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('\\\\foo/**.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNotNone(globre.match('\\\\foo/**.ini', '/foo\\bar/conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('/foo/*.ini', '/foo/bar/conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('/foo/*.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('/foo/*.ini', '/foo\\bar/conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('\\\\foo\\\\*.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('\\\\foo\\\\*.ini', '/foo/bar/conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('\\\\foo/*.ini', '\\foo\\bar\\conf.ini', sep='/\\'))
+    self.assertIsNone(globre.match('\\\\foo/*.ini', '/foo\\bar/conf.ini', sep='/\\'))
+
+
 #------------------------------------------------------------------------------
 # end of $Id$
+# $ChangeLog$
 #------------------------------------------------------------------------------
